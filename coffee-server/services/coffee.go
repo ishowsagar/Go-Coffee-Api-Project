@@ -89,6 +89,41 @@ func (c *Coffee) CreateCoffee(coffee Coffee) (*Coffee,error) {
 	return &coffee,nil
 	 
 }
+// ! Get coffee by the price query
+func (c *Coffee) GetCoffeeByqparamsPrice(price float32) (*Coffee,error) {
+	context,cancel := context.WithTimeout(context.Background(),dbTimeout)
+	defer cancel()
+	
+	// func proceeds
+	query := `
+		select
+			id,name,image,region,roast,price,grind_unit,created_at,updated_at 
+		from coffees
+		where
+			price=$1
+	`
+
+	var coffee Coffee
+	row := db.QueryRowContext(context,query,price)
+	err := row.Scan(
+		&coffee.ID,
+		&coffee.Name,
+		&coffee.Image,
+		&coffee.Region,
+		&coffee.Roast,
+		&coffee.Price,
+		&coffee.GrindUnit,
+		&coffee.CreatedAt,
+		&coffee.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil,err
+	} 
+	return &coffee,nil //if successfully queries and injected data into those fields of created type for this data
+}
+
+
 // ! Get coffee by the name
 func (c *Coffee) GetCoffeeByName(name string) (*Coffee,error) {
 	// method belongs to the Coffee type
@@ -128,6 +163,40 @@ func (c *Coffee) GetCoffeeByName(name string) (*Coffee,error) {
 	//✅✅ successfully got the query data into type instance (let's say) 
 	return &coffee,nil
 
+}
+
+
+// ! Get coffee by the query params {region}
+func (c *Coffee) GetCoffeeByQueryParams(region string) (*Coffee,error) {
+	// 
+	context,cancel := context.WithTimeout(context.Background(),dbTimeout)
+	defer cancel()
+
+	query := `
+		select 
+			id,name,image,region,roast,price,grind_unit,created_at,updated_at from coffees
+		where 
+			region=$1
+	`
+
+	var coffee Coffee
+	row := db.QueryRowContext(context,query,region)
+	err := row.Scan(
+		&coffee.ID, 
+		&coffee.Name, 
+		&coffee.Image, 
+		&coffee.Region, 
+		&coffee.Roast, 
+		&coffee.Price, 
+		&coffee.GrindUnit, 
+		&coffee.CreatedAt,
+		&coffee.UpdatedAt,
+	)
+	if err != nil {
+		return nil,err
+	}
+
+	return &coffee,nil
 }
 
 

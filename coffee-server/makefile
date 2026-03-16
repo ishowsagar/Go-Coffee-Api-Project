@@ -57,6 +57,6 @@ stop :
 add :
 	git add .
 commit : add
-			git commit -m "pushes newer changes"
+	git commit -m "pushes newer changes"
 push : commit
-		git push origin 
+	git push 

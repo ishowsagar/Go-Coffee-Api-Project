@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"server/helpers"
 	"server/services"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -45,6 +46,58 @@ func GetCoffeeByName(w http.ResponseWriter,r *http.Request) {
 		return
 	}
 	// sending response back to client
+	helpers.WriteJson(w,http.StatusOK,helpers.Envelop{"coffee":retrieved_coffee})
+
+}
+
+// Get Coffee by query Params ({?price=__}👇👇) 
+func GetCoffeeByPriceQP(w http.ResponseWriter, r *http.Request) {
+	
+	// fetch client url params
+	price_param := r.URL.Query().Get("price")
+	if price_param == "" {
+		http.Error(w, "missing price query param", http.StatusBadRequest)
+		return
+	}
+
+	// @ converts string query param into a decimal price value
+	priceValue, err := strconv.ParseFloat(price_param, 32)
+	if err != nil {
+		http.Error(w,"pass a valid numeric price only",http.StatusBadRequest)
+		return
+	}
+
+	// successfully fetched numeric value of price q.p
+	retrieved_coffee,err := models.Coffee.GetCoffeeByqparamsPrice(float32(priceValue))
+	if err != nil {
+		http.Error(w,"failed to get coffee due to unknown price passed to it",http.StatusBadRequest)
+		return
+	}
+
+	// send response to the client
+	helpers.WriteJson(w,http.StatusOK,helpers.Envelop{"coffee":retrieved_coffee})
+} 
+
+// Get Coffee by query Params ({?region=__}👇👇) 
+func GetCoffeeByQueryParams(w http.ResponseWriter,r *http.Request) {
+	
+	// # step 1 => fetch query param from URL using r data struct
+	region_qparam := r.URL.Query().Get("region")
+	if region_qparam == "" {
+		region_qparam = chi.URLParam(r,"region")
+	}
+	if region_qparam == "" {
+		http.Error(w,"missing region query param",http.StatusBadRequest)
+		return
+	}
+	
+	// # step 2 => Invoke method that belongs to Coffee type to call db to get coffee data by passing query param
+	retrieved_coffee,err := models.Coffee.GetCoffeeByQueryParams(region_qparam)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		return
+	}
+	// # step 3 => Send response back to client using helper function
 	helpers.WriteJson(w,http.StatusOK,helpers.Envelop{"coffee":retrieved_coffee})
 
 }
