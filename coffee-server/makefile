@@ -19,11 +19,11 @@ create_container :
 create_db :
 	docker exec -it ${DB_DOCKER_CONTAINER} createdb --username=${USER} --owner=${USER} ${DB_NAME}
 
-startC :
+start_container :
 	docker start ${DB_DOCKER_CONTAINER}
 
 #  custom make cmd to stop container
-stopC  :
+stop_container :
 	docker stop ${DB_DOCKER_CONTAINER}
 
 create_migrations :
@@ -41,7 +41,7 @@ build :
 		echo "Deleted ${BINARY}"; \
 	fi
 	@echo "Building binary⚡⚡..."
-# 	go build -o name sourceLoc
+# 	go build -o name sourceLocation
 	go build -o ${BINARY} cmd/server/*.go
 
 # follow up cmds example1:ex2 --> it means it would run ex2 commands first when running example1 title commands
@@ -52,3 +52,11 @@ stop :
 	@echo "Stopping backend server🔃🔃..."
 	@-pkill -SIGTERM -f "./${BINARY}"
 	@echo "Stopped server❌❌..."
+
+# custom commands for git workflow
+add :
+	git add .
+commit : add
+			git commit -m "pushes newer changes"
+push : commit
+		git push origin 

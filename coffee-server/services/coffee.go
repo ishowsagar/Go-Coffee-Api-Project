@@ -89,6 +89,48 @@ func (c *Coffee) CreateCoffee(coffee Coffee) (*Coffee,error) {
 	return &coffee,nil
 	 
 }
+// ! Get coffee by the name
+func (c *Coffee) GetCoffeeByName(name string) (*Coffee,error) {
+	// method belongs to the Coffee type
+	// as this would return Coffee data and ofc error
+
+	context,cancel := context.WithTimeout(context.Background(),dbTimeout)
+	defer cancel()
+
+	// if successfully function proceeds
+	var coffee Coffee //# type struct that stores coffee data 
+	query := `
+		select 
+			id,name,image,region,roast,price,grind_unit,created_at,updated_at 
+		from coffees
+		where name=$1
+	`
+	// * make a db call to retrieve coffee data matches query with this name being passed to it
+	row := db.QueryRowContext(context,query,name)
+	// scan to get each field and injecting into the type which stores this data
+	err := row.Scan(
+		// ! it scans each field as query gives that too in order gets delivered into the type
+		&coffee.ID,
+		&coffee.Name,
+		&coffee.Image,
+		&coffee.Region,
+		&coffee.Roast,
+		&coffee.Price,
+		&coffee.GrindUnit,
+		&coffee.CreatedAt,
+		&coffee.UpdatedAt,
+	)
+
+	// if caught any error scanning fields retrieved from query~db call and injecting data into type
+	if err != nil {
+		return nil,err
+	}	
+	//✅✅ successfully got the query data into type instance (let's say) 
+	return &coffee,nil
+
+}
+
+
 // ! Get coffee by the id
 func (c *Coffee) GetCoffeeByID(id string) (*Coffee,error) {
 	// as this would return single coffee data and ofc error handeling

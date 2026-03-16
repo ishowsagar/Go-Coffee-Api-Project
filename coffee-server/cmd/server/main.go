@@ -34,13 +34,13 @@ func (app *Application) Serve() error {
 		log.Fatal("failed to load env : %w",err)
 	}
 
-	//# enc loaded --> use "os" package to use them✅✅
+	//# env loaded --> use "os" package to use them✅✅
 	port := app.Config.Port
 	fmt.Printf("Go API is listening on port : %s🚀🚀...",port)
 
 	server := &http.Server{
 		Addr: fmt.Sprintf(":%s",port),
-		// fixed -- add chi router to route api calls to chiRouter to excecute corresponding func
+		// fixed -- add chi router to route api calls to chiRouter to excecute corresponding funcs
 		Handler: router.Routes(),
 	}
 	return server.ListenAndServe()

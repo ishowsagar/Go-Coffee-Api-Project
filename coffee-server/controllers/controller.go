@@ -10,10 +10,10 @@ import (
 )
 
 var coffee services.Coffee
-
+var models services.Models //@ Serves access to type that stores Coffee & JsonResponse types that implements methods Belongs to them
 // Get all coffees
 func GetAllCoffees(w http.ResponseWriter,r *http.Request) {
-	all,err := coffee.GetAllCoffees()
+	all,err := models.Coffee.GetAllCoffees()
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		return
@@ -24,7 +24,8 @@ func GetAllCoffees(w http.ResponseWriter,r *http.Request) {
 // Get Coffee by id slug ({id}👇👇)
 func GetCoffeeByID(w http.ResponseWriter,r *http.Request) {
 	id := chi.URLParam(r,"id")
-	coffee,err := coffee.GetCoffeeByID(id)
+	// coffee,err := coffee.GetCoffeeByID(id)
+	coffee,err := models.Coffee.GetCoffeeByID(id)
 
 	// if caught error getting coffee
 	if err != nil {
@@ -35,7 +36,18 @@ func GetCoffeeByID(w http.ResponseWriter,r *http.Request) {
 	helpers.WriteJson(w,http.StatusOK,helpers.Envelop{"coffee":coffee})
 }
 
+// Get Coffee by  slug ({name}👇👇) 
+func GetCoffeeByName(w http.ResponseWriter,r *http.Request) {
+	name_slug := chi.URLParam(r,"name")
+	retrieved_coffee,err := models.Coffee.GetCoffeeByName(name_slug)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		return
+	}
+	// sending response back to client
+	helpers.WriteJson(w,http.StatusOK,helpers.Envelop{"coffee":retrieved_coffee})
 
+}
 //@PUT ---- Update Coffee by id slug ({id}👇👇)
 func UpdateCoffeeByID(w http.ResponseWriter,r *http.Request) {
 	id := chi.URLParam(r,"id")
@@ -46,7 +58,8 @@ func UpdateCoffeeByID(w http.ResponseWriter,r *http.Request) {
 		http.Error(w,err.Error(),http.StatusBadRequest)
 		return
 	}
-	updatedCoffee,err:= coffee.UpdateCoffee(id,coffeeUpdateInputVar)
+	// updatedCoffee,err:= coffee.UpdateCoffee(id,coffeeUpdateInputVar)
+	updatedCoffee,err:= models.Coffee.UpdateCoffee(id,coffeeUpdateInputVar)
 	// if caught error getting coffee
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
@@ -68,7 +81,7 @@ func CreateCoffee(w http.ResponseWriter,r *http.Request) {
 	// at this point --> ✅✅successfully have decoded data into coffeeData instance which has all the required data
 	
 	// & Since we got coffee data, now we can pass to func that query it to createCoffee
-	coffeeCreated,err := coffee.CreateCoffee(coffeeData) // ✅✅ creates coffee 
+	coffeeCreated,err := models.Coffee.CreateCoffee(coffeeData) // ✅✅ creates coffee 
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		return
@@ -79,7 +92,7 @@ func CreateCoffee(w http.ResponseWriter,r *http.Request) {
 
 func DeleteCoffee(w http.ResponseWriter,r *http.Request) {
 	id := chi.URLParam(r,"id")
-	err := coffee.DeleteCoffeeByID(id)
+	err := models.Coffee.DeleteCoffeeByID(id)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
 		return

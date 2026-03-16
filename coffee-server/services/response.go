@@ -1,7 +1,5 @@
 package services
 
-
-
 // type declaration
 
 type JsonResponse struct {

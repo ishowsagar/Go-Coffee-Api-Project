@@ -33,7 +33,8 @@ func Routes() http.Handler {
 	})
 	router.Get("/api/coffees/all",controllers.GetAllCoffees)
 	router.Post("/api/coffees/create",controllers.CreateCoffee)
-	router.Get("/api/coffees/{id:[0-9a-fA-F-]+}",controllers.GetCoffeeByID)
+	router.Get("/api/coffees/id/{id:[0-9a-fA-F-]+}",controllers.GetCoffeeByID)
+	router.Get("/api/coffees/name/{name}",controllers.GetCoffeeByName) // get coffee by name
 	router.Put("/api/coffees/{id:[0-9a-fA-F-]+}",controllers.UpdateCoffeeByID)
 	router.Delete("/api/coffees/{id:[0-9a-fA-F-]+}",controllers.DeleteCoffee)
 
